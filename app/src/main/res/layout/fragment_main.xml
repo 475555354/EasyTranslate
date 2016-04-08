@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/set_language"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="10dp">
+
+        <Spinner
+            android:id="@+id/input_language"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="5"
+            android:padding="15dp"
+            android:entries="@array/languages"/>
+
+        <ImageButton
+            android:id="@+id/exchange_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:background="@mipmap/exchange"
+            />
+
+        <Spinner
+            android:id="@+id/output_language"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="5"
+            android:padding="15dp"
+            android:entries="@array/languages">
+        </Spinner>
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/input_box"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_below="@+id/set_language"
+        android:gravity="top"
+        android:padding="10dp"
+        android:hint="在此输入..."/>
+
+    <ImageButton
+        android:id="@+id/translate_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@mipmap/translate"
+        android:layout_alignParentRight="true"
+        android:layout_alignBottom="@id/input_box"/>
+
+    <TextView
+        android:id="@+id/output_box"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/input_box"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:background="#ffffff"/>
+
+</RelativeLayout>
