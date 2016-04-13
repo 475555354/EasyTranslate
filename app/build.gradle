@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "com.example.kid.easytraslate"
+        applicationId "com.example.kid.easytranslate"
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 1

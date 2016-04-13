@@ -1,11 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#5CACEE"
-    tools:context="com.example.kid.easytraslate.MainActivity">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/set_language"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="10dp">
 
-</FrameLayout>
+        <ImageButton
+            android:id="@+id/exchange_button"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:background="@mipmap/exchange"
+            />
+
+        <Spinner
+            android:id="@+id/input_language"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_toLeftOf="@id/exchange_button"
+            android:padding="15dp"
+            android:entries="@array/languages"
+            android:background="#009CFF"/>
+
+        <Spinner
+            android:id="@+id/output_language"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_toRightOf="@id/exchange_button"
+            android:padding="15dp"
+            android:entries="@array/languages"
+            android:background="#009CFF">
+        </Spinner>
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/input_box"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_below="@+id/set_language"
+        android:gravity="top"
+        android:padding="10dp"
+        android:hint="在此输入..."
+        android:textColorHint="#50BBFF"
+        android:textColor="#ffffff"
+        android:background="@null"/>
+
+    <TextView
+        android:id="@+id/output_box"
+        android:textIsSelectable="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/input_box"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:background="#ffffff"/>
+
+    <ImageButton
+        android:id="@+id/translate_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@mipmap/translate"
+        android:layout_alignParentRight="true"
+        android:layout_alignBottom="@id/input_box"
+        android:layout_margin="10dp"/>
+
+</RelativeLayout>
