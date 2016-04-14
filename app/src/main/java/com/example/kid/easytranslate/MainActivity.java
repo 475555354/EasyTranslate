@@ -143,9 +143,6 @@ public class MainActivity extends Activity {
                         from = "it";
                         return;
                 }
-
-                if(from != "zh" && outputLanguage.getSelectedItemPosition() == -1)
-                    to = "zh";
             }
 
             @Override
