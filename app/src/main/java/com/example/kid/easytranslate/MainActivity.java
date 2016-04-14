@@ -2,6 +2,7 @@ package com.example.kid.easytranslate;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -77,6 +78,13 @@ public class MainActivity extends Activity {
         translateButton = (ImageButton)findViewById(R.id.translate_button);
         inputBox = (EditText)findViewById(R.id.input_box);
         outputBox = (TextView)findViewById(R.id.output_box);
+
+        Intent intent = getIntent();
+        if(intent.getAction().equals(Intent.ACTION_SEND)){
+            String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+            translate(sharedText, from, to);
+            inputBox.setText(sharedText);
+        }
 
         String[] inputLanguages = getResources().getStringArray(R.array.input_languages);
         ArrayAdapter<String> leftAdapter = new ArrayAdapter<>
