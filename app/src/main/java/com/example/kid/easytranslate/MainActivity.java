@@ -1,12 +1,12 @@
 package com.example.kid.easytranslate;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -78,16 +78,14 @@ public class MainActivity extends Activity {
         inputBox = (EditText)findViewById(R.id.input_box);
         outputBox = (TextView)findViewById(R.id.output_box);
 
-        outputBox.setTextIsSelectable(true);
-
-        String[] languages = getResources().getStringArray(R.array.languages);
-
-        ArrayAdapter<String> leftAdapter = new ArrayAdapter<String>
-                (this, R.layout.spinner_item_left, languages);
+        String[] inputLanguages = getResources().getStringArray(R.array.input_languages);
+        ArrayAdapter<String> leftAdapter = new ArrayAdapter<>
+                (this, R.layout.spinner_item_left, inputLanguages);
         inputLanguage.setAdapter(leftAdapter);
 
-        ArrayAdapter<String> rightAdapter = new ArrayAdapter<String>
-                (this, R.layout.spinner_item_right, languages);
+        String[] outputLanguages = getResources().getStringArray(R.array.output_languages);
+        ArrayAdapter<String> rightAdapter = new ArrayAdapter<>
+                (this, R.layout.spinner_item_right, outputLanguages);
         outputLanguage.setAdapter(rightAdapter);
 
         inputLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -109,7 +107,40 @@ public class MainActivity extends Activity {
                         from = "en";
                         return;
                     case 3:
+                        from = "yue";
+                        return;
+                    case 4:
+                        from = "wyw";
+                        return;
+                    case 5:
                         from = "jp";
+                        return;
+                    case 6:
+                        from = "kor";
+                        return;
+                    case 7:
+                        from = "fra";
+                        return;
+                    case 8:
+                        from = "spa";
+                        return;
+                    case 9:
+                        from = "th";
+                        return;
+                    case 10:
+                        from = "ara";
+                        return;
+                    case 11:
+                        from = "ru";
+                        return;
+                    case 12:
+                        from = "pt";
+                        return;
+                    case 13:
+                        from = "de";
+                        return;
+                    case 14:
+                        from = "it";
                         return;
                 }
 
@@ -134,16 +165,46 @@ public class MainActivity extends Activity {
 
                 switch (position){
                     case 0:
-                        to = "en";
-                        return;
-                    case 1:
                         to = "zh";
                         return;
-                    case 2:
+                    case 1:
                         to = "en";
                         return;
+                    case 2:
+                        to = "yue";
+                        return;
                     case 3:
+                        to = "wyw";
+                        return;
+                    case 4:
                         to = "jp";
+                        return;
+                    case 5:
+                        to = "kor";
+                        return;
+                    case 6:
+                        to = "fra";
+                        return;
+                    case 7:
+                        to = "spa";
+                        return;
+                    case 8:
+                        to = "th";
+                        return;
+                    case 9:
+                        to = "ara";
+                        return;
+                    case 10:
+                        to = "ru";
+                        return;
+                    case 11:
+                        to = "pt";
+                        return;
+                    case 12:
+                        to = "de";
+                        return;
+                    case 13:
+                        to = "it";
                         return;
                 }
 
@@ -153,6 +214,16 @@ public class MainActivity extends Activity {
             public void onNothingSelected(AdapterView<?> parent) {
                 to = "zh";
                 return;
+            }
+        });
+
+        exchangeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+                        .setMessage(R.string.info)
+                        .create();
+                alertDialog.show();
             }
         });
 
