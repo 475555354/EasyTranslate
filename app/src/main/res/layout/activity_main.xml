@@ -10,7 +10,8 @@
         android:layout_alignParentTop="true"
         android:orientation="horizontal"
         android:gravity="center"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:background="#009CFF">
 
         <ImageButton
             android:id="@+id/exchange_button"
@@ -53,7 +54,7 @@
         android:hint="在此输入..."
         android:textColorHint="#50BBFF"
         android:textColor="#ffffff"
-        android:background="@null"/>
+        android:background="#009CFF"/>
 
     <TextView
         android:id="@+id/output_box"

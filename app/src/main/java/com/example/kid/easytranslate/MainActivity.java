@@ -4,14 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -19,16 +18,13 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.kid.easytranslate.util.HttpCallBackListener;
+import com.example.kid.easytranslate.util.HttpUtil;
 import com.example.kid.easytranslate.util.MD5;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Random;
 
@@ -60,15 +56,15 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            Window window = getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-                | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.TRANSPARENT);
-            window.setNavigationBarColor(Color.TRANSPARENT);
-        }
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+//            Window window = getWindow();
+//            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+//                | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+//            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//            window.setStatusBarColor(Color.TRANSPARENT);
+//            window.setNavigationBarColor(Color.TRANSPARENT);
+//        }
 
         setContentView(R.layout.activity_main);
 
@@ -265,41 +261,29 @@ public class MainActivity extends Activity {
                 + "&from=" + from + "&to=" + to + "&appid=" + appid + "&salt=" + salt
                 + "&sign=" + md5;
 
-        new Thread(new Runnable() {
+        HttpUtil.sendHttpRequest(address, new HttpCallBackListener() {
             @Override
-            public void run() {
-                HttpURLConnection connection = null;
+            public void onFinish(String response) {
                 try{
-                    URL url = new URL(address);
-                    connection = (HttpURLConnection)url.openConnection();
-                    connection.setRequestMethod("GET");
-                    connection.setConnectTimeout(8000);
-                    connection.setReadTimeout(8000);
-                    InputStream in = connection.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null){
-                        response.append(line).append("\n");
-                    }
-
-                    JSONObject jsonObject = new JSONObject(response.toString());
-                    JSONArray array = (JSONArray)jsonObject.get("trans_result");
-                    JSONObject dst = (JSONObject) array.get(0);
-                    String translation = URLDecoder.decode(dst.getString("dst"),"utf-8");
+                    Log.d("123456", response);
+                    JSONObject jsonObject = new JSONObject(response);
+                    JSONArray array = (JSONArray)jsonObject.getJSONArray("trans_result");
+                    JSONObject dst = (JSONObject)array.getJSONObject(0);
+                    String translation = URLDecoder.decode(dst.getString("dst"), "utf-8");
 
                     Message message = new Message();
                     message.obj = translation;
                     mHandler.sendMessage(message);
-
                 }catch (Exception e){
                     e.printStackTrace();
-                }finally {
-                    if(connection != null)
-                        connection.disconnect();
                 }
             }
-        }).start();
-    }
 
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
 }
