@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -265,7 +264,6 @@ public class MainActivity extends Activity {
             @Override
             public void onFinish(String response) {
                 try{
-                    Log.d("123456", response);
                     JSONObject jsonObject = new JSONObject(response);
                     JSONArray array = (JSONArray)jsonObject.getJSONArray("trans_result");
                     JSONObject dst = (JSONObject)array.getJSONObject(0);

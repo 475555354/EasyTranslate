@@ -1,7 +1,5 @@
 package com.example.kid.easytranslate.util;
 
-import android.util.Log;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,7 +16,6 @@ public class HttpUtil {
             public void run() {
                 HttpURLConnection connection = null;
                 try{
-                    Log.d("123456", "13254");
                     URL url = new URL(address);
                     connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestMethod("GET");
@@ -31,7 +28,6 @@ public class HttpUtil {
                     while ((line = reader.readLine()) != null){
                         response.append(line).append("\n");
                     }
-                    Log.d("123456", response.toString());
                     if (httpCallBackListener != null)
                         httpCallBackListener.onFinish(response.toString());
                 }catch (Exception e){
