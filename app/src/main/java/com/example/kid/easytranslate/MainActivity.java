@@ -1,19 +1,21 @@
 package com.example.kid.easytranslate;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.MotionEvent;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -27,24 +29,30 @@ import org.json.JSONObject;
 import java.net.URLDecoder;
 import java.util.Random;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private String q = null;
     private String from = "auto";
     private String to = "zh";
 
+    private RelativeLayout mLayout;
+    private FloatingActionButton translateButton;
     private Spinner inputLanguage;
     private Spinner outputLanguage;
     private ImageButton exchangeButton;
-    private ImageButton translateButton;
     private EditText inputBox;
     private TextView outputBox;
+    private ProgressBar mProgressBar;
+
+    private final String[] languageList = {"auto", "zh", "en", "yue", "wyw", "jp", "kor", "fra", "spa", "th", "ara", "ru", "pt", "de", "it"};
+
 
     Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message message){
             if (message.obj != null){
                 outputBox.setText(message.obj.toString());
+                mProgressBar.setVisibility(View.GONE);
             }
             super.handleMessage(message);
         }
@@ -53,26 +61,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-
-//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-//            Window window = getWindow();
-//            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-//                | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-//            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-//            window.setStatusBarColor(Color.TRANSPARENT);
-//            window.setNavigationBarColor(Color.TRANSPARENT);
-//        }
-
         setContentView(R.layout.activity_main);
 
+        mLayout = (RelativeLayout) findViewById(R.id.main_layout);
         inputLanguage = (Spinner)findViewById(R.id.input_language);
         outputLanguage = (Spinner)findViewById(R.id.output_language);
         exchangeButton = (ImageButton)findViewById(R.id.exchange_button);
-        translateButton = (ImageButton)findViewById(R.id.translate_button);
+        translateButton = (FloatingActionButton) findViewById(R.id.btn_trans);
         inputBox = (EditText)findViewById(R.id.input_box);
         outputBox = (TextView)findViewById(R.id.output_box);
+        mProgressBar = (ProgressBar)findViewById(R.id.progress_bar);
 
         Intent intent = getIntent();
         if(intent.getAction().equals(Intent.ACTION_SEND)){
@@ -81,14 +79,16 @@ public class MainActivity extends Activity {
             inputBox.setText(sharedText);
         }
 
-        String[] inputLanguages = getResources().getStringArray(R.array.input_languages);
-        ArrayAdapter<String> leftAdapter = new ArrayAdapter<>
-                (this, R.layout.spinner_item_left, inputLanguages);
+        ArrayAdapter<CharSequence> leftAdapter = ArrayAdapter.createFromResource(
+                this, R.array.input_languages, android.R.layout.simple_spinner_item
+        );
+        leftAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         inputLanguage.setAdapter(leftAdapter);
 
-        String[] outputLanguages = getResources().getStringArray(R.array.output_languages);
-        ArrayAdapter<String> rightAdapter = new ArrayAdapter<>
-                (this, R.layout.spinner_item_right, outputLanguages);
+        ArrayAdapter<CharSequence> rightAdapter = ArrayAdapter.createFromResource(
+                this, R.array.output_languages, android.R.layout.simple_spinner_item
+        );
+        rightAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         outputLanguage.setAdapter(rightAdapter);
 
         inputLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -99,59 +99,12 @@ public class MainActivity extends Activity {
                 textView.setTextSize(20);
                 textView.setTextColor(Color.WHITE);
 
-                switch (position) {
-                    case 0:
-                        from = "auto";
-                        return;
-                    case 1:
-                        from = "zh";
-                        return;
-                    case 2:
-                        from = "en";
-                        return;
-                    case 3:
-                        from = "yue";
-                        return;
-                    case 4:
-                        from = "wyw";
-                        return;
-                    case 5:
-                        from = "jp";
-                        return;
-                    case 6:
-                        from = "kor";
-                        return;
-                    case 7:
-                        from = "fra";
-                        return;
-                    case 8:
-                        from = "spa";
-                        return;
-                    case 9:
-                        from = "th";
-                        return;
-                    case 10:
-                        from = "ara";
-                        return;
-                    case 11:
-                        from = "ru";
-                        return;
-                    case 12:
-                        from = "pt";
-                        return;
-                    case 13:
-                        from = "de";
-                        return;
-                    case 14:
-                        from = "it";
-                        return;
-                }
+                from = languageList[position];
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 from = "auto";
-                return;
             }
         });
 
@@ -163,67 +116,34 @@ public class MainActivity extends Activity {
                 textView.setTextSize(20);
                 textView.setTextColor(Color.WHITE);
 
-                switch (position){
-                    case 0:
-                        to = "zh";
-                        return;
-                    case 1:
-                        to = "en";
-                        return;
-                    case 2:
-                        to = "yue";
-                        return;
-                    case 3:
-                        to = "wyw";
-                        return;
-                    case 4:
-                        to = "jp";
-                        return;
-                    case 5:
-                        to = "kor";
-                        return;
-                    case 6:
-                        to = "fra";
-                        return;
-                    case 7:
-                        to = "spa";
-                        return;
-                    case 8:
-                        to = "th";
-                        return;
-                    case 9:
-                        to = "ara";
-                        return;
-                    case 10:
-                        to = "ru";
-                        return;
-                    case 11:
-                        to = "pt";
-                        return;
-                    case 12:
-                        to = "de";
-                        return;
-                    case 13:
-                        to = "it";
-                        return;
-                }
-
+                to = languageList[position + 1];
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 to = "zh";
-                return;
             }
         });
 
         exchangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
-                        .setMessage(R.string.info)
-                        .create();
-                alertDialog.show();
+//                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+//                        .setMessage(R.string.info)
+//                        .create();
+//                alertDialog.show();
+
+                int in = inputLanguage.getSelectedItemPosition();
+                int out = outputLanguage.getSelectedItemPosition();
+
+                if (in == 0){
+                    Snackbar.make(mLayout, "Check your input language!", Snackbar.LENGTH_SHORT).show();
+                }else {
+                    inputLanguage.setSelection(out + 1);
+                    outputLanguage.setSelection(in - 1);
+
+                    translate(inputBox.getText().toString(), languageList[out + 1], languageList[in - 1]);
+                }
             }
         });
 
@@ -232,16 +152,6 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 q = inputBox.getText().toString();
                 translate(q, from, to);
-            }
-        });
-        translateButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN)
-                    v.setBackgroundResource(R.mipmap.translate_click);
-                else if (event.getAction() == MotionEvent.ACTION_UP)
-                    v.setBackgroundResource(R.mipmap.translate);
-                return false;
             }
         });
 
@@ -253,20 +163,29 @@ public class MainActivity extends Activity {
         final String appid = "20160401000017405";
         final String token = "SIiXZhlNCHMi8lVRB3sm";
 
-        final String string = appid + q + salt + token;
-        String md5 = MD5.GetMD5Code(string, true);
+        StringBuilder sb = new StringBuilder();
+        sb.append(appid).append(q).append(salt).append(token);
+        String md5 = MD5.GetMD5Code(sb.toString(), true);
 
-        final String address = "http://api.fanyi.baidu.com/api/trans/vip/translate?q=" + q
-                + "&from=" + from + "&to=" + to + "&appid=" + appid + "&salt=" + salt
-                + "&sign=" + md5;
+        StringBuilder address = new StringBuilder();
+        address.append("http://api.fanyi.baidu.com/api/trans/vip/translate?q=").append(q)
+                .append("&from=").append(from).append("&to=").append(to).append("&appid=").append(appid)
+                .append("&salt=").append(salt).append("&sign=").append(md5);
 
-        HttpUtil.sendHttpRequest(address, new HttpCallBackListener() {
+        Log.d("Kidd", (inputBox.getText() != null) + "");
+        Log.d("Kidd", (!inputBox.getText().toString().equals("")) + "");
+        if (inputBox.getText() != null && !inputBox.getText().toString().equals(""))
+            mProgressBar.setVisibility(View.VISIBLE);
+        else
+            Snackbar.make(mLayout, "type something to translate...", Snackbar.LENGTH_SHORT).show();
+
+        HttpUtil.sendHttpRequest(address.toString(), new HttpCallBackListener() {
             @Override
             public void onFinish(String response) {
                 try{
                     JSONObject jsonObject = new JSONObject(response);
-                    JSONArray array = (JSONArray)jsonObject.getJSONArray("trans_result");
-                    JSONObject dst = (JSONObject)array.getJSONObject(0);
+                    JSONArray array = jsonObject.getJSONArray("trans_result");
+                    JSONObject dst = array.getJSONObject(0);
                     String translation = URLDecoder.decode(dst.getString("dst"), "utf-8");
 
                     Message message = new Message();

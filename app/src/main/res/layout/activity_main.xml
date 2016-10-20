@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/main_layout"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -10,7 +12,7 @@
         android:layout_alignParentTop="true"
         android:orientation="horizontal"
         android:gravity="center"
-        android:padding="10dp"
+        android:padding="45dp"
         android:background="#009CFF">
 
         <ImageButton
@@ -28,7 +30,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_toLeftOf="@id/exchange_button"
-            android:padding="15dp"
+            android:paddingRight="15dp"
             android:entries="@array/input_languages"
             android:background="#009CFF"/>
 
@@ -38,7 +40,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_toRightOf="@id/exchange_button"
-            android:padding="15dp"
+            android:paddingLeft="25dp"
             android:entries="@array/output_languages"
             android:background="#009CFF">
         </Spinner>
@@ -66,13 +68,24 @@
         android:textSize="18sp"
         android:background="#ffffff"/>
 
-    <ImageButton
-        android:id="@+id/translate_button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@mipmap/translate"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btn_trans"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/translate"
+        app:fabSize="normal"
+        android:layout_marginTop="92dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_below="@+id/set_language"
         android:layout_alignParentRight="true"
-        android:layout_alignBottom="@id/input_box"
-        android:layout_margin="10dp"/>
+        android:layout_alignParentEnd="true"/>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
 
 </RelativeLayout>
