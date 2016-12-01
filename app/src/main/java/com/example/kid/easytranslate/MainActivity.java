@@ -3,12 +3,9 @@ package com.example.kid.easytranslate;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -46,18 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
     private final String[] languageList = {"auto", "zh", "en", "yue", "wyw", "jp", "kor", "fra", "spa", "th", "ara", "ru", "pt", "de", "it"};
 
-
-    Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message message){
-            if (message.obj != null){
-                outputBox.setText(message.obj.toString());
-                mProgressBar.setVisibility(View.GONE);
-            }
-            super.handleMessage(message);
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         mProgressBar = (ProgressBar)findViewById(R.id.progress_bar);
 
         Intent intent = getIntent();
-        if(intent.getAction().equals(Intent.ACTION_SEND)){
+        if(intent.getAction().equals(Intent.ACTION_SEND) && intent.getType().equals("text/plain")){
             String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
             translate(sharedText, from, to);
             inputBox.setText(sharedText);
@@ -128,10 +113,6 @@ public class MainActivity extends AppCompatActivity {
         exchangeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
-//                        .setMessage(R.string.info)
-//                        .create();
-//                alertDialog.show();
 
                 int in = inputLanguage.getSelectedItemPosition();
                 int out = outputLanguage.getSelectedItemPosition();
@@ -165,42 +146,55 @@ public class MainActivity extends AppCompatActivity {
 
         StringBuilder sb = new StringBuilder();
         sb.append(appid).append(q).append(salt).append(token);
-        String md5 = MD5.GetMD5Code(sb.toString(), true);
+        String md5 = MD5.getMD5Code(sb.toString(), true);
 
         StringBuilder address = new StringBuilder();
         address.append("http://api.fanyi.baidu.com/api/trans/vip/translate?q=").append(q)
                 .append("&from=").append(from).append("&to=").append(to).append("&appid=").append(appid)
                 .append("&salt=").append(salt).append("&sign=").append(md5);
 
-        Log.d("Kidd", (inputBox.getText() != null) + "");
-        Log.d("Kidd", (!inputBox.getText().toString().equals("")) + "");
-        if (inputBox.getText() != null && !inputBox.getText().toString().equals(""))
+        if (inputBox.getText() != null && !inputBox.getText().toString().equals("")){
             mProgressBar.setVisibility(View.VISIBLE);
+            HttpUtil.sendHttpRequest(address.toString(), new HttpCallBackListener() {
+                @Override
+                public void onFinish(String response) {
+                    try{
+                        JSONObject jsonObject = new JSONObject(response);
+                        JSONArray array = jsonObject.getJSONArray("trans_result");
+                        JSONObject dst = array.getJSONObject(0);
+                        final String translation = URLDecoder.decode(dst.getString("dst"), "utf-8");
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                outputBox.setText(translation);
+                                mProgressBar.setVisibility(View.GONE);
+                            }
+                        });
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        showError();
+                    }
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    e.printStackTrace();
+                    showError();
+                }
+            });
+        }
         else
             Snackbar.make(mLayout, "type something to translate...", Snackbar.LENGTH_SHORT).show();
+    }
 
-        HttpUtil.sendHttpRequest(address.toString(), new HttpCallBackListener() {
+    private void showError(){
+        runOnUiThread(new Runnable() {
             @Override
-            public void onFinish(String response) {
-                try{
-                    JSONObject jsonObject = new JSONObject(response);
-                    JSONArray array = jsonObject.getJSONArray("trans_result");
-                    JSONObject dst = array.getJSONObject(0);
-                    String translation = URLDecoder.decode(dst.getString("dst"), "utf-8");
-
-                    Message message = new Message();
-                    message.obj = translation;
-                    mHandler.sendMessage(message);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onError(Exception e) {
-                e.printStackTrace();
+            public void run() {
+                Snackbar.make(mLayout, "Something is wrong...", Snackbar.LENGTH_SHORT).show();
+                mProgressBar.setVisibility(View.INVISIBLE);
             }
         });
-
     }
 }

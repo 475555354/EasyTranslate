@@ -41,7 +41,7 @@ public class MD5 {
      * @param str 待加密的字符串
      * @return
      */
-    public static String GetMD5Code(String str) {
+    public static String getMD5Code(String str) {
         String result = null;
         try {
         	result = str;
@@ -59,19 +59,12 @@ public class MD5 {
      * @param lowerCase 大小写
      * @return
      */
-    public static String GetMD5Code(String str,boolean lowerCase) {
-        String result = null;
-        try {
-        	result = new String(str);
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            result = byteToString(md.digest(str.getBytes()));
-            if(lowerCase){
-            	result = result.toLowerCase();	
-            }
-        } catch (NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
+    public static String getMD5Code(String str, boolean lowerCase) {
+
+        if (lowerCase){
+            return getMD5Code(str).toLowerCase();
         }
-        return result;
+        return getMD5Code(str);
     }
 
 }
